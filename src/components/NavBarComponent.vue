@@ -2,10 +2,10 @@
     <div class="main_container_navbar" v-if="props.isVisible == true" ref="main_container_ref">
         <img src="../assets/logo.png" alt="logo-nav" id="logo">
         <div class="options_container">
-            <p> <i class="fa-solid fa-wallet"></i>Cuentas</p>
-            <p><i class="fa-regular fa-credit-card"></i>Tarjetas</p>
-            <p><i class="fa-solid fa-arrows-left-right-to-line"></i>Transacciones</p>
-            <p><i class="fa-solid fa-hand-holding-dollar"></i>Prestamos</p>
+            <p @click="toggleSection('accounts')"><i class="fa-solid fa-wallet"></i>Cuentas</p>
+            <p @click="toggleSection('cards')"><i class="fa-regular fa-credit-card"></i>Tarjetas</p>
+            <p @click="toggleSection('transactions')"><i class="fa-solid fa-arrows-left-right-to-line"></i>Transacciones</p>
+            <p @click="toggleSection('loans')"><i class="fa-solid fa-hand-holding-dollar"></i>Prestamos</p>
         </div>
         <button>Salir<i class="fa-solid fa-door-open"></i></button>
     </div>    
@@ -14,15 +14,20 @@
 <script setup>
 import { defineProps, ref,defineEmits } from 'vue';
 import { onClickOutside } from '@vueuse/core'
+import 'animate.css';
 
 const main_container_ref = ref(null)
 
-const emit = defineEmits(['close-navbar'])
+const emit = defineEmits(['close-navbar','toggle-section'])
 const props =defineProps(
     {
         isVisible:Boolean
     }
 )
+const toggleSection = (section) => {
+    emit('toggle-section', section);
+}
+
 
 onClickOutside(main_container_ref,()=>{
     emit('close-navbar')
@@ -35,14 +40,15 @@ onClickOutside(main_container_ref,()=>{
     padding: 0;
 }
 .main_container_navbar{
+animation: slideInLeft 0.3s; 
     width: 300px;
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: rgb(244, 244, 244);
     position: absolute;
-    z-index: 3;
+    z-index:10;
 }
 #logo{
     width: 60%;
@@ -58,18 +64,18 @@ onClickOutside(main_container_ref,()=>{
     font-size: 16px;
     width: 90%;
     margin-top: 70px;
-}
+    }
 p{
     margin-left: 5%;
 }
 button{
     width: 70%;
-    height: 35px;
+    height: 45px;
     border: none;
     border-radius: 3px;
     background-color:#226068;
     color: white;
-    margin-top: 160px;
+    margin-top: 100px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -2,9 +2,12 @@
     <div class="account_loan_container_main" v-if="props.isVisible == true">
         <h2>Cuentas</h2>
         <div class="accounts_container">
-            <AccountComponent />
-            <AccountComponent />
-            <AccountComponent />
+            <AccountComponent 
+            @show-movements="handleShowMovements"/>
+            <AccountComponent 
+            @show-movements="handleShowMovements"/>
+            <AccountComponent 
+            @show-movements="handleShowMovements"/>            
             <button id="add_btn">Add new account</button>
         </div>
         <h2>Prestamos</h2>
@@ -13,24 +16,36 @@
             <LoanComponent />
             <LoanComponent />
         </div>
+        <AccountMovements 
+        :isVisible="AccountMovemetsIsVisible"
+        @close-movements="AccountMovemetsIsVisible=false"/>
     </div>
 </template>
 
 <script setup>
+import AccountMovements from '../components/AccountMovements.vue'
 import AccountComponent from './AccountComponent.vue'
 import LoanComponent from './LoanComponent.vue'
-import { defineProps } from 'vue';
+import { defineProps,ref } from 'vue';
+
+const AccountMovemetsIsVisible = ref(false)
 
 const props = defineProps(
     {
         isVisible : Boolean
     }
 )
+
+const handleShowMovements =()=>{
+    window.scrollTo(0,0)
+AccountMovemetsIsVisible.value  = true   
+}
 </script>
 
 <style scoped>
 
 .account_loan_container_main{
+    user-select: none;
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -39,12 +54,12 @@ const props = defineProps(
     align-items: center;
 }
 h2{
+    margin-top: 20px;
     color: grey;
     font-family: Arial, Helvetica, sans-serif;
 }
 .accounts_container,.loans_container{
     width: 100%;
-
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -67,10 +82,9 @@ h2{
 }
 @media (min-width:1000px){
 
-    .account_loan_container_main{
-    width: 80%;
-    min-height: 90vh;
-    align-self: flex-end;
+.account_loan_container_main{
+width: 80%;
+align-self: flex-end;
 } 
 .accounts_container{
     min-height: 180px;

@@ -1,12 +1,12 @@
 <template>
     <div class="main_container_login">
         <img src="../assets/logo.png" alt="banco_logo" class="logo_img">
-        <form action="">
+        <form action="" @submit.prevent="login"> 
             <label for="dni" class="label_input">Dni
-                <input type="text" class="input_text">
+                <input type="text" class="input_text" v-model="dni">
             </label>
             <label for="password" class="label_input">Clave
-                <input type="text" class="input_text">
+                <input type="text" class="input_text" v-model="password">
             </label>
             <label for="remember" >
                 <input type="checkbox" name="remember" 
@@ -24,12 +24,25 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import 'animate.css';
+import AuthService from '../services/AuthServices'
+
+const dni = ref('')
+const password = ref('')
+
+const login=()=>{
+    console.log(dni.value,password.value)
+AuthService.login(dni.value,password.value)
+}
+
+
 
 </script>
 
 <style scoped>
 *{
-    font-family: "Lexend Peta", sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: 200;
     font-size: 12px;
 }
@@ -39,6 +52,7 @@
     align-items: center;
     min-height: 100vh;
     position: relative;
+    animation: fadeIn 1s;
 }
 .logo_img{
     width: 200px;

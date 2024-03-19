@@ -19,6 +19,7 @@
 <script setup>
 import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import 'animate.css';
 
 const showPayOption = ref(false)
 const pay_container = ref(null)
@@ -34,6 +35,7 @@ onClickOutside(pay_container,()=>{
     padding: 0;
 }
 .main_container_loan{
+    animation: fadeInRight 0.3s;
     width: 90%;
     height: 80px;
     border-radius: 8px;
@@ -74,6 +76,20 @@ onClickOutside(pay_container,()=>{
 #loan_type,#payment_title{
     font-size: 14px;
 }
+#pay{
+    position: absolute;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    position: absolute;
+    text-align: center;
+    right: 35px;
+    top: 20px;
+    width: 130px;
+    font-size: 14px;
+    color: black;
+    box-shadow: 1px 1px 4px 0px rgb(217, 217, 217);
+}
 .fa-caret-down{
     position: absolute;
     top: 8px;
@@ -98,20 +114,7 @@ onClickOutside(pay_container,()=>{
     cursor: pointer;
     box-shadow: 1px 4px 1px 0px rgb(197, 197, 197);
 }
-#pay{
-    position: absolute;
-    background-color: white;
-    padding: 10px;
-    border-radius: 4px;
-    position: absolute;
-    text-align: center;
-    right: 35px;
-    top: 20px;
-    width: 130px;
-    font-size: 14px;
-    color: black;
-    box-shadow: 1px 1px 4px 0px rgb(217, 217, 217);
-}
+
 #pay:hover{
     color: grey;
 }
