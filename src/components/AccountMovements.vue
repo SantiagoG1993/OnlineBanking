@@ -1,5 +1,5 @@
 <template>
-    <div class="accounts_movements_main_container" v-if="isVisible == true">
+    <div class="accounts_movements_main_container" v-if="props.isVisible == true">
         <i id="x" @click="emit('close-movements')" class="fa-regular fa-x"></i>
         <div class="data_container">
             <p id="account_number">VIN-00005687</p>
@@ -111,13 +111,14 @@ onClickOutside(delete_container,()=>{
 .accounts_movements_main_container{
     animation:fadeIn 0.4s;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
+    right: 0px;
     width: 100%;
     background-color: white;
     display: flex;
     flex-direction: column;
-    z-index: 3;
+    z-index: 4;
     user-select: none;
 }
 #x{

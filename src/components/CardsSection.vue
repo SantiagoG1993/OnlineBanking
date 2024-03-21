@@ -13,25 +13,45 @@
             <CardComponent />
             <CardComponent />
         </section>
-
+        <button id="add_card_btn" @click="handleClick">Add new card</button>
+        <AddCardForm 
+        :isVisible="isVisibleAddCard"
+        @close-add-form="isVisibleAddCard = false" />
     </div>
 </template>
 
 <script setup>
 import CardComponent from '../components/CardComponent.vue'
-import { defineProps } from 'vue';
+import AddCardForm from '../components/AddCardForm.vue'
+import { ref,defineProps } from 'vue';
 import 'animate.css'
 
+const isVisibleAddCard = ref(false)
 const props =defineProps(
     {
         isVisible:Boolean
     }
 )
 
+const handleClick = ()=>{
+    isVisibleAddCard.value = true
+    if(window.innerWidth <999){
+        window.scrollTo(
+            {
+                top:0,
+                behavior:'smooth'
+            }
+        )
+    }
+}
+
+
 </script>
 
 <style scoped>
 .cards_container_main{
+    display: flex;
+    flex-direction: column;
     user-select: none;
     animation:fadeIn 0.4s;
     width: 100%;
@@ -55,13 +75,30 @@ h2{
     font-family: Arial, Helvetica, sans-serif;
 color: grey;
 }
+#add_card_btn{
+    width: 155px;
+    height: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+    border: none;
+    border-radius: 4px;
+    background-color: #12b1c7;
+    color: white;
+    margin-top: 20px;
+    align-self: flex-end;
+    margin-right: 30px;
+}
+#add_card_btn:active{
+    background-color: #61afb9;  
+}
+
 @media (min-width:1000px){
     .cards_container{
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: end;
     margin-top: 20px;
-    width: 90%;
+    width: 80%;
+
 
 }
 .cards_container_main{
@@ -70,6 +107,10 @@ color: grey;
 }
 .title{
     display: none;
+}
+#add_card_btn:hover{
+    cursor: pointer; 
+    background-color: #5a979f;
 }
     }
 </style>

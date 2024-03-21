@@ -2,13 +2,14 @@
     <div class="account_loan_container_main" v-if="props.isVisible == true">
         <h2>Cuentas</h2>
         <div class="accounts_container">
-            <AccountComponent 
-            @show-movements="handleShowMovements"/>
-            <AccountComponent 
-            @show-movements="handleShowMovements"/>
-            <AccountComponent 
-            @show-movements="handleShowMovements"/>            
-            <button id="add_btn">Add new account</button>
+            <AccountComponent v-for="account of accounts"
+            :key="account.number"
+            :number="account.number"
+            :balance="account.balance"
+            :date="account.creationDate"
+            />
+        
+            <button id="add_btn" @click="createAccount">Add new account</button>
         </div>
         <h2>Prestamos</h2>
         <div class="loans_container">
@@ -16,30 +17,42 @@
             <LoanComponent />
             <LoanComponent />
         </div>
-        <AccountMovements 
-        :isVisible="AccountMovemetsIsVisible"
-        @close-movements="AccountMovemetsIsVisible=false"/>
     </div>
 </template>
 
 <script setup>
-import AccountMovements from '../components/AccountMovements.vue'
 import AccountComponent from './AccountComponent.vue'
 import LoanComponent from './LoanComponent.vue'
-import { defineProps,ref } from 'vue';
+import AccountService from '../services/AccountService'
+import { defineProps,ref,onMounted } from 'vue';
 
 const AccountMovemetsIsVisible = ref(false)
-
+const accounts = ref([])
 const props = defineProps(
     {
         isVisible : Boolean
     }
 )
-
-const handleShowMovements =()=>{
-    window.scrollTo(0,0)
-AccountMovemetsIsVisible.value  = true   
+const createAccount= ()=>{
+    AccountService.createAccount()
 }
+
+onMounted(()=>{
+    fetch('http://localhost:8080/api/clients/auth',{method:'GET',credentials:'include'})
+        .then(res=>{
+            if(!res.ok){
+                throw new Error('Error fetching data')
+            }
+            else{
+                return res.json()
+            }
+        })
+        .then(data=>{console.log(data)
+        accounts.value = data.accounts
+        })
+        .catch(err=>console.log(err))
+    }
+)
 </script>
 
 <style scoped>

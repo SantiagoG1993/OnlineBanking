@@ -7,13 +7,14 @@
             <p @click="toggleSection('transactions')"><i class="fa-solid fa-arrows-left-right-to-line"></i>Transacciones</p>
             <p @click="toggleSection('loans')"><i class="fa-solid fa-hand-holding-dollar"></i>Prestamos</p>
         </div>
-        <button>Salir<i class="fa-solid fa-door-open"></i></button>
+        <button @click="logOut" >Salir<i class="fa-solid fa-door-open"></i></button>
     </div>    
 </template>
 
 <script setup>
 import { defineProps, ref,defineEmits } from 'vue';
 import { onClickOutside } from '@vueuse/core'
+import AuthService from '../services/AuthServices'
 import 'animate.css';
 
 const main_container_ref = ref(null)
@@ -32,6 +33,10 @@ const toggleSection = (section) => {
 onClickOutside(main_container_ref,()=>{
     emit('close-navbar')
 })
+
+const logOut = ()=>{
+    AuthService.logout()
+}
 </script>
 
 <style scoped>

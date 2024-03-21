@@ -11,7 +11,7 @@ const AuthService = {
                 throw new Error('Error Login')
             }
             else{
-                return res.json()
+                return res
             }
         })
         .then(data=>{console.log(data);
@@ -19,6 +19,7 @@ const AuthService = {
         })
         .catch(err=>console.log(err+'entra aca'))
     },
+
     logout(){
         fetch(`${API_URL}logout`,{method:'POST',credentials:'include'})
         .then(res=>{
@@ -26,13 +27,15 @@ const AuthService = {
                 throw new Error('Error Loggin out')
             }
             else{
-                return res.json()
+                return res
             }
         })
         .then(data=>{console.log(data);
-        })
+            router.push('/')})
         .catch(err=>console.log(err))
     },
+
+
     getAuthCLient(){
         fetch(`${API_URL}clients/auth`,{method:'GET',credentials:'include'})
         .then(res=>{
@@ -43,10 +46,9 @@ const AuthService = {
                 return res.json()
             }
         })
-        .then(data=>console.log(data))
+        .then(data=>{console.log(data)
+        })
         .catch(err=>console.log(err))
     }
-
-
 }
-export default AuthService;
+export default AuthService ;

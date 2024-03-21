@@ -1,27 +1,34 @@
 <template>
-    <div class="main_container_account" @click="emit('show-movements')">
+    <div class="main_container_account" @click="AccountMovementsIsVisible = true">
         <p id="account_type">C.A</p>
         <div class="data1_container">
             <p id="account_number_title">Numero de cuenta</p>
-            <p id="account_number">VIN-00222556</p>
+            <p id="account_number">{{props.number}}</p>
             <p id="amount_title">Saldo</p>
-            <p id="amount_number">$1.054.520.00</p>
+            <p id="amount_number">${{props.balance}}</p>
         </div>
         <div class="data2_container">
             <p id="created_title">Creada el</p>
-            <p id="date">15/03/2024</p>
+            <p id="date">{{props.date}}</p>
         </div>
+        <AccountMovements 
+        :isVisible="AccountMovementsIsVisible"
+        @close-movements="AccountMovementsIsVisible = false" />
     </div>
 </template>
 
 <script setup>
-import { ref,defineEmits } from 'vue'
+import { ref,defineProps } from 'vue'
+import AccountMovements from './AccountMovements.vue'
 
-
-
-
-const AccountMovemetsIsVisible = ref(false)
-const emit = defineEmits(['show-movements'])
+const props = defineProps(
+    {
+        number:String,
+        balance:Number,
+        date:String
+    }
+)
+const AccountMovementsIsVisible = ref(false)
 
 </script>
 
