@@ -14,8 +14,8 @@ const AccountService ={
         .then(data=>console.log(data))
         .catch(err=>console.log(err))
     },
-    deleteAccount(id){
-        fetch(`${API_URL}account/delete?id=${id}`,{method:'POST',credentials:'include'})
+    deleteAccount(number){
+        fetch(`${API_URL}account/delete?number=${number}`,{method:'POST',credentials:'include'})
         .then(res=>{
             if(!res.ok){
                 throw new Error('error creating account')

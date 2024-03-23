@@ -13,7 +13,12 @@
         </div>
         <AccountMovements 
         :isVisible="AccountMovementsIsVisible"
-        @close-movements="AccountMovementsIsVisible = false" />
+        :number="props.number"
+        :balance="props.balance"
+        :creationDate="props.date"
+        :transactionsArray="props.transactionsArray"
+        @close-movements="handleCloseMovements" 
+        />
     </div>
 </template>
 
@@ -23,13 +28,20 @@ import AccountMovements from './AccountMovements.vue'
 
 const props = defineProps(
     {
+        id:Number,
         number:String,
         balance:Number,
-        date:String
+        date:String,
+        transactionsArray:[]
     }
 )
 const AccountMovementsIsVisible = ref(false)
 
+const handleCloseMovements = ()=>{
+    console.log(AccountMovementsIsVisible.value)
+AccountMovementsIsVisible.value = false
+console.log(AccountMovementsIsVisible.value)
+}
 </script>
 
 <style scoped>

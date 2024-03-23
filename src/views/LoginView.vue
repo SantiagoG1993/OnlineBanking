@@ -6,7 +6,7 @@
                 <input type="text" class="input_text" v-model="dni">
             </label>
             <label for="password" class="label_input">Clave
-                <input type="text" class="input_text" v-model="password">
+                <input type="password" class="input_text" v-model="password">
             </label>
             <label for="remember" >
                 <input type="checkbox" name="remember" 
@@ -79,6 +79,7 @@ form{
     border: none;
     border-bottom: 1px solid grey;
     background-color: rgb(247, 247, 247);
+    padding-left: 20px;
 }
 .input_text:focus{
     outline: none;

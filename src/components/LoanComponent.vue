@@ -1,13 +1,13 @@
 <template>
     <div class="main_container_loan">
         <div id="amount_container">
-                <p id="loan_type">Hipotecario</p>
-                <p id="loan_amount">$40.000.000</p>
+                <p id="loan_type">{{props.name}}</p>
+                <p id="loan_amount">${{props.amount}}</p>
         </div>
         <div id="payments_container">
             <i class="fa-solid fa-caret-down" @click="showPayOption = !showPayOption"></i>
             <p id="payment_title">Cuotas</p>
-            <p id="payment_number">12/64</p>
+            <p id="payment_number">{{props.payments}}</p>
             <div id="pay" v-if="showPayOption == true" ref="pay_container">
                 <p>Pagar cuota</p>
             </div>
@@ -17,13 +17,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,defineProps } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import 'animate.css';
 
 const showPayOption = ref(false)
 const pay_container = ref(null)
 
+const props = defineProps(
+    {
+        name:String,
+        amount:String,
+        payments:Number,
+        id:Number
+    }
+)
 onClickOutside(pay_container,()=>{
     showPayOption.value =false
 })

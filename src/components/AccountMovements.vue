@@ -1,14 +1,13 @@
 <template>
-    <div class="accounts_movements_main_container" v-if="props.isVisible == true">
-        <i id="x" @click="emit('close-movements')" class="fa-regular fa-x"></i>
+    <div class="accounts_movements_main_container" v-if="props.isVisible == true" ref="main_cont_ref">
         <div class="data_container">
-            <p id="account_number">VIN-00005687</p>
+            <p id="account_number">{{props.number}}</p>
             <i class="fa-solid fa-wallet"></i>
-            <p id="amount">$1.000.005.00</p>
+            <p id="amount">${{props.balance.toLocaleString()}}</p>
             <p id="account_type">C.A</p>
-            <p id="date">12/02/2020</p>
+            <p id="date">{{props.creationDate}}</p>
             <i class="fa-solid fa-caret-down" @click="showDeleteOption =!showDeleteOption"></i>
-            <div id="delete_account" v-if="showDeleteOption == true" ref="delete_container">
+            <div id="delete_account" v-if="showDeleteOption == true" ref="delete_container" @click="deleteAccount(props.number)">
             <p>Eliminar cuenta</p>
         </div>
         </div>
@@ -23,60 +22,11 @@
             </tr>
             </thead>
         <tbody>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
-            </tr>
-            <tr>
-                <td>DEBITO</td>
-                <td>$54.200.25</td>
-                <td>12/12/24</td>
-                <td>19:00:26</td>
+            <tr v-for="transaction of props.transactionsArray" :key="transaction.amount">
+                <td>{{transaction.type}}</td>
+                <td>${{transaction.amount.toLocaleString()}}</td>
+                <td>{{transaction.date.slice(0,-16)}}</td>
+                <td>{{transaction.date.slice(11,-7)}}</td>
             </tr>
         </tbody>
         </table>
@@ -86,20 +36,54 @@
 <script setup>
 import { defineProps,defineEmits,ref } from 'vue';
 import { onClickOutside } from '@vueuse/core'
+import Swal from 'sweetalert2'
 import 'animate.css';
+import AccountService from '@/services/AccountService';
+
 const emit = defineEmits(['close-movements'])
 
 const props = defineProps(
     {
-        isVisible:Boolean
+        isVisible:Boolean,
+        number:String,
+        balance:String,
+        creationDate:String,
+        transactionsArray:[]
     }
 )
 const showDeleteOption = ref(false)
 const delete_container = ref(null)
-
+const main_cont_ref = ref(null)
 onClickOutside(delete_container,()=>{
     showDeleteOption.value=true
 })
+onClickOutside(main_cont_ref,()=>{
+    emit('close-movements')
+})
+
+const deleteAccount = (id)=>{
+Swal.fire(
+    {
+        title:'Delete account?',
+        icon:'question',
+        showDenyButton:true,
+        showConfirmButton:true
+    }
+)
+.then(result=>{
+    if(result.isDenied){
+        Swal.fire('Cancelled','','info')
+    }else{
+        if(result.isConfirmed){
+            AccountService.deleteAccount(id)
+            Swal.fire('Account succesfully deleted','','success')
+                setTimeout(()=>{
+                window.location.reload()
+                },1500)
+        }
+    }
+})
+}
 </script>
 
 <style scoped>
@@ -109,26 +93,19 @@ onClickOutside(delete_container,()=>{
     padding: 0;
 }
 .accounts_movements_main_container{
-    animation:fadeIn 0.4s;
-    height: 100%;
+    animation:slideInRight 0.1s;
+    min-height: 70%;
     position: fixed;
     top: 0;
     right: 0px;
     width: 100%;
-    background-color: white;
+    background-color: #114a51;
     display: flex;
     flex-direction: column;
     z-index: 4;
     user-select: none;
 }
-#x{
-    align-self: flex-end;
-    margin-right: 30px;
-    margin-top: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 25px;
-    color: #138b9b;
-}
+
 .fa-caret-down{
     position: absolute;
     right: 20px;
@@ -152,8 +129,8 @@ onClickOutside(delete_container,()=>{
     height: 130px;
     margin-top: 30px;
     position: relative;
-    background-color: #12B1C7;
-    color: white;
+    background-color: #ffffff;
+    color: #114a51
 }
 #account_number{
 text-align: center;
@@ -168,7 +145,7 @@ margin-bottom: 10px;
     font-weight: bold;
 }
 #account_type{
-    color: #1491a1d8;
+    color: #114a51;
     font-size: 40px;
     position: absolute;
     top: 5px;
@@ -192,10 +169,10 @@ table{
     border-collapse: collapse;
 }
 td{
-        color: black;
+        color: white;
         text-align: center;
         border: none;
-        border-bottom: 1px solid rgb(214, 214, 214);
+        border-bottom: 1px solid white;
         padding: 10px;
         font-size: 13px;
 }
@@ -207,13 +184,25 @@ tr:hover{
 th{
     border: none;
     padding: 10px;
-    color: rgb(99, 99, 99);
-    border-bottom: 1px solid black;
+    color: white;
+    border-bottom: 1px solid white;
 }
 @media (min-width:1000px){
 .accounts_movements_main_container{
-    width: 80%;
+    width:70%;
+    border-radius:20px;
+    background-color: white;
+    box-shadow: -1px 1px 8px 0px rgba(180, 180, 180, 0.75);
+
 }   
+.data_container{
+    width:100%;
+    height: 130px;
+    margin-top: 30px;
+    position: relative;
+    background-color: #12B1C7;
+    color: white;
+}
 .fa-wallet{
     left: 30%;
 }
@@ -241,6 +230,12 @@ th{
     top: 45px;
     right: 45px;
     height: 38px;
+}
+td,tr,th{
+    color: black;
+}
+td,th{
+    border-bottom: 1px solid black;
 }
 }
 </style>

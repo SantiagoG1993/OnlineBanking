@@ -45,7 +45,7 @@ const logOut = ()=>{
     padding: 0;
 }
 .main_container_navbar{
-animation: slideInLeft 0.3s; 
+animation: slideInLeft 0.1s; 
     width: 300px;
     height: 100vh;
     display: flex;

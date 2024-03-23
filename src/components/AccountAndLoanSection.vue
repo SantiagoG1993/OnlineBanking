@@ -7,15 +7,20 @@
             :number="account.number"
             :balance="account.balance"
             :date="account.creationDate"
+            :transactionsArray="account.transactions"
             />
         
             <button id="add_btn" @click="createAccount">Add new account</button>
         </div>
         <h2>Prestamos</h2>
         <div class="loans_container">
-            <LoanComponent />
-            <LoanComponent />
-            <LoanComponent />
+            <LoanComponent v-for="loan of loans" 
+            :key="loan.id"
+            :name="loan.name"
+            :amount="loan.amount"
+            :id="loan.id"
+            :payments="loan.payments" />
+
         </div>
     </div>
 </template>
@@ -25,16 +30,39 @@ import AccountComponent from './AccountComponent.vue'
 import LoanComponent from './LoanComponent.vue'
 import AccountService from '../services/AccountService'
 import { defineProps,ref,onMounted } from 'vue';
+import Swal from 'sweetalert2'
 
-const AccountMovemetsIsVisible = ref(false)
+
 const accounts = ref([])
+const loans = ref([])
+
 const props = defineProps(
     {
         isVisible : Boolean
     }
 )
 const createAccount= ()=>{
-    AccountService.createAccount()
+    Swal.fire(
+        {
+            title:'Create new account?',
+            icon:'question',
+            showDenyButton:true
+        }
+    )
+    .then(result=>{
+        if(result.isDenied){
+            Swal.fire('Cancelled','','info')
+        }else{
+            if(result.isConfirmed){
+                AccountService.createAccount()
+                Swal.fire('Account succesfully created','','success')
+                setTimeout(()=>{
+                window.location.reload()
+                },1500)
+            }
+        }
+    })
+
 }
 
 onMounted(()=>{
@@ -48,7 +76,8 @@ onMounted(()=>{
             }
         })
         .then(data=>{console.log(data)
-        accounts.value = data.accounts
+        accounts.value = data.accounts.filter(a=>a.deleted == false)
+        loans.value = data.clientLoans
         })
         .catch(err=>console.log(err))
     }
