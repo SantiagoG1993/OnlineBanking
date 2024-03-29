@@ -35,7 +35,6 @@ const AuthService = {
         .catch(err=>console.log(err))
     },
 
-
     getAuthCLient(){
         fetch(`${API_URL}clients/auth`,{method:'GET',credentials:'include'})
         .then(res=>{
@@ -47,6 +46,32 @@ const AuthService = {
             }
         })
         .then(data=>{console.log(data)
+        })
+        .catch(err=>console.log(err))
+    },
+    registerClient(dni,password){
+        const options = {
+            method:'POST',
+            credentials:'include',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(
+                {
+                    dni:dni,
+                    password:password
+                }
+            )
+        }
+        fetch(`${API_URL}clients`,options)
+        .then(res=>{
+            if(!res.ok){
+                throw new Error('error creating account')
+            }else return res
+        })
+        .then(data=>{
+            console.log(data)
+            this.login(dni,password)
         })
         .catch(err=>console.log(err))
     }

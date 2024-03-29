@@ -8,15 +8,20 @@
             <label for="password" class="label_input">Clave
                 <input type="password" class="input_text" v-model="password">
             </label>
-            <label for="remember" >
+            <label v-if="registerIsVisible == true" for="password" class="label_input animate__animated animate__fadeIn">Confirmar clave
+                <input type="password" class="input_text" v-model="confirmedPassword">
+            </label>
+            <label v-if="registerIsVisible == false" for="remember" >
                 <input type="checkbox" name="remember" 
                 id="remember_checkbox">
                 Recordar usuario
             </label>
-            <button>Ingresar</button>
+            <button v-if="registerIsVisible == false">Ingresar</button>
+            <button v-else class="animate__animated animate__fadeInUp" @click="register">Registrarse</button>
         </form>
-            <p class="p_text">Olvide mi contraseña</p>
-            <p class="p_text">Soy cliente, generar usuario y clave</p>  
+            <p class="p_text" v-if="registerIsVisible == false">Olvide mi contraseña</p>
+            <p v-if="registerIsVisible == false" class="p_text" @click="registerIsVisible = true" >Soy cliente, generar usuario y clave</p>
+            <p v-else class="p_text" @click="registerIsVisible = false" >Volver</p>   
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="wave">
   <path fill="#12B1C7" fill-opacity="1" d="M0,128L80,160C160,192,320,256,480,261.3C640,267,800,213,960,170.7C1120,128,1280,96,1360,80L1440,64L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
 </svg>     
@@ -26,14 +31,23 @@
 <script setup>
 import { ref } from 'vue';
 import 'animate.css';
+import Swal from 'sweetalert2'
 import AuthService from '../services/AuthServices'
 
+const registerIsVisible = ref(false)
 const dni = ref('')
 const password = ref('')
+const confirmedPassword = ref('')
 
 const login=()=>{
-    console.log(dni.value,password.value)
 AuthService.login(dni.value,password.value)
+}
+const register = ()=>{
+    if(password.value != confirmedPassword.value){
+        Swal.fire('Password is incorrect','','error')
+    }else{
+        AuthService.registerClient(dni.value,password.value)
+    }
 }
 
 
@@ -103,6 +117,12 @@ button:hover{
 .p_text{
     color: #12B1C7;
     z-index: 2;
+    margin-top: 10px;
+    font-size: 13px;
+}
+.p_text:active{
+        color: #0d7a88; 
+        user-select: none;
 }
 .p_text:hover{
     cursor: pointer;
@@ -117,9 +137,6 @@ button:hover{
 @media (min-width:1000px){
     form{
         width: 400px;
-    }
-    .p_text{
-        margin-top: 10px;
     }
 }
 </style>
