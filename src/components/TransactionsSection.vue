@@ -30,15 +30,19 @@ const props = defineProps(
         font-size: 22px;
         margin-top: 20px;
     }
-        svg{
-        position: absolute;
-        bottom: 0px;
+    svg{
+        display: none;
     }
+    
     @media (min-width:1000px){
     .transactions_main_container{
         width: 80%;
     }
-
+    svg{
+        display: unset;
+        position: absolute;
+        bottom: 0px;
+    }
 
 }
 </style>

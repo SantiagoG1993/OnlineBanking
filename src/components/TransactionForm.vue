@@ -5,39 +5,47 @@
             <p id="tercero" @click="handleClick('tercero')">Tercero</p>
         </div>
         <hr>
-        <form action="">
+        <form action="" @submit.prevent="handleTransfer">
             <label for="">Cuenta de origen
-                <input v-if="selectedType == 'tercero'" type="text" class="input_text">
-                <select v-else name="" id="">
-                    <option value="">cuenta 1</option>
-                    <option value="">cuenta 2</option>
-                    <option value="">cuenta 3</option>
+                <select name="" id="" v-model="originAccountSelected">
+                    <option :value="account" v-for="account of accounts" :key="account">{{account}}</option>
+
                 </select>
             </label>
             <label for="">Cuenta destino
-                <input v-if="selectedType == 'tercero'" type="text" class="input_text">
-                <select v-else name="" id="">
-                    <option value="">cuenta 1</option>
-                    <option value="">cuenta 2</option>
-                    <option value="">cuenta 3</option>
+                <input v-if="selectedType == 'tercero'" type="text" class="input_text" v-model="destinyAccountSelected">
+                <select v-else name="" id="" v-model="destinyAccountSelected">
+                    <option :value="account" v-for="account of filteredAccounts" :key="account">{{account}}</option>
+
                 </select>
             </label>
             <label for="">Monto
-                <input type="number" class="input_text amount">
+                <input type="number" class="input_text amount" v-model="amount">
             </label>
             <label for="">Descripcion
-                <input type="text" class="input_text description">
+                <input type="text" class="input_text description" v-model="description">
             </label>
-            <button id="transfer_btn">Transferir</button>
+            <button id="transfer_btn" >Transferir</button>
         </form>
 
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted,computed } from 'vue';
+import TransactionServices from '../services/TransactionService'
+import Swal from 'sweetalert2'
 
 const selectedType = ref('')
+const accounts = ref([])
+const originAccountSelected = ref('')
+const destinyAccountSelected = ref('')
+const amount = ref(0)
+const description = ref('')
+
+const filteredAccounts = computed(()=>{
+    return accounts.value.filter(a=>a != originAccountSelected.value)
+})
 
 const handleClick = (id)=>{
     selectedType.value=id;
@@ -51,7 +59,52 @@ const handleClick = (id)=>{
     const element = document.querySelector(`#${id}`)
     element.classList.add('--selected')
 }
+onMounted(()=>{
+    fetch('http://localhost:8080/api/clients/auth',{method:'GET',credentials:'include'})
+        .then(res=>{
+            if(!res.ok){
+                throw new Error('Error fetching data')
+            }
+            else{
+                return res.json()
+            }
+        })
+        .then(data=>{console.log(data)
+        accounts.value = data.accounts.filter(a=>a.deleted == false).map(a=>a.number)
+        })
+        .catch(err=>console.log(err))
+    })
 
+    const handleTransfer = ()=>{
+        Swal.fire(
+            {
+                title:'Transferir a cuenta',
+                text:'Esta seguro que desa transferir el dinero?',
+                icon:'question',
+                showConfirmButton:true,
+                showDenyButton:true,
+            }
+        )
+        .then(result=>{
+            if(result.isDenied){
+                Swal.fire('Cancelado','La operacion ha sido cancelada','info')
+            }else{
+                if(result.isConfirmed){
+                            const data = {
+            originAccountNumber:originAccountSelected.value,
+            destinationAccountNumber:destinyAccountSelected.value,
+            amount:amount.value,
+            description:description.value
+            }
+            TransactionServices.transfer(data)
+            Swal.fire('Transferencia realizada correctamente','','success')
+            setTimeout(()=>{
+                window.location.reload()
+            },2000)
+                }
+            }
+        })
+    } 
 </script>
 
 <style scoped>

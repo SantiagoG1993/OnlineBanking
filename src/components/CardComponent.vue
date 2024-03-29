@@ -1,39 +1,78 @@
 <template>
-    <div class="card_container">
+<div class="card_container" :style="{ backgroundColor: props.cardType === 'CREDITO' ? 'black' : '' }">
         <i class="fa-solid fa-caret-down" @click="showDeleteOption =!showDeleteOption"></i>
         <img src="../assets/logo.png" alt="logo_card" id="logo">
         <div id="card_type_container">
-            <p id="type_card">DEBITO</p>
-            <p id="color_card">GOLD</p>
+            <p id="type_card">{{props.cardColor}}</p>
+            <p id="color_card">{{props.cardType}}</p>
         </div>
 
-        <p ref="delete_container" v-if="showDeleteOption == true" id="delete_card">Eliminar tarjeta</p
+        <p ref="delete_container" v-if="showDeleteOption == true" id="delete_card" @click="handleDelete(props.number)">Eliminar tarjeta</p
         >
-        <p id="card_number">4508 1225 6629 4348</p>
+        <p id="card_number">{{props.number}}</p>
         <p id="valido" class="desde" >VALIDO DESDE</p>
-        <p id="valid_number" class="num_desde">05/20</p>
+        <p id="valid_number" class="num_desde">{{props.fromDate.slice(5)}}</p>
         <p id="valido" class="hasta">VALIDO HASTA</p>
-        <p id="valid_number" class="num_hasta">05/24</p>
-        <p id="user_name">SANTIAGO GAMARRA</p>
+        <p id="valid_number" class="num_hasta">{{props.thruDate.slice(5)}}</p>
+        <p id="user_name">{{props.cardHolder}}</p>
         <div id="cvv_container">
             <p id="cvv">cvv</p>
-            <p id="cvv_number">332</p>
+            <p id="cvv_number">{{props.cvv}}</p>
         </div>
 
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
 import { onClickOutside } from '@vueuse/core'
+import CardService from '../services/CardService'
+import Swal from 'sweetalert2'
 import 'animate.css';
 
 const showDeleteOption = ref(false)
 const delete_container = ref(null)
 
+const props = defineProps(
+    {
+        id:Number,
+        cardColor:String,
+        cardType:String,
+        fromDate:String,
+        thruDate:String,
+        cardHolder:String,
+        number:String,
+        cvv:Number
+    }
+)
 onClickOutside(delete_container,()=>{
     showDeleteOption.value = false
 })
+const handleDelete= (id)=>{
+    Swal.fire(
+        {
+            title:'Delete card?',
+            icon:'question',
+            showConfirmButton:true,
+            showDenyButton:true
+        }
+    )
+    .then(result=>{
+        if(result.isDenied){
+            Swal.fire('Cancelled','','info')
+        }
+        else{
+            if(result.isConfirmed){
+                    CardService.deleteCard(id)
+                    Swal.fire('Succesfully deleted','','success')
+                    setTimeout(()=>{
+                        window.location.reload()
+                    },1000)
+            }
+        }
+    })
+
+}
 </script>
 
 <style scoped>

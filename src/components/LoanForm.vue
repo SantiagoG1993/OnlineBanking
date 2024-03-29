@@ -1,31 +1,23 @@
 <template>
     <div class="loan_form_main_container">
-        <form action="">
+        <form action="" @submit.prevent="handleRequestLoan">
             <label for="">Tipo de prestamo
-                <select name="" id="">
-                    <option value="">Prestamo 1</option>
-                    <option value="">Prestamo 2</option>
-                    <option value="">Prestamo 3</option>
-                    <option value="">Prestamo 4</option>
+                <select name="" id="" v-model="loanSelected">
+                    <option :value="loan.name"  v-for="loan of loans" :key="loan">{{loan.name}}</option>
+
                 </select>
             </label>
             <label for="">Cuenta destino
-                <select name="" id="">
-                    <option value="">Cuenta 1</option>
-                    <option value="">Cuenta 2</option>
-                    <option value="">Cuenta 3</option>
-                    <option value="">Cuenta 4</option>
+                <select name="" id="" v-model="selectedDestinyAccount">
+                    <option :value="account" v-for="account of accounts" :key="account">{{account}}</option>
                 </select>
                 <label for="">Monto
-                    <input type="number" class="monto">
+                    <input type="number" class="monto" v-model="amount">
                 </label>
                 <label for="">Cantidad de cuotas
-                    <select name="" id="cuotas">
-                        <option value="">6</option>
-                        <option value="">12</option>
-                        <option value="">24</option>
-                        <option value="">36</option>
-                        <option value="">64</option>
+                    <select name="" id="cuotas" v-model="paymentsSelected">
+                        <option :value="payment" v-for="payment of loanPaymentsFilter" :key="payment">{{payment}}</option>
+
                     </select>
                 </label>
             </label>
@@ -35,7 +27,94 @@
 </template>
 
 <script setup>
+import { ref,onMounted,computed } from 'vue'
+import LoanService from '../services/LoanService'
+import Swal from 'sweetalert2'
 
+
+const loanSelected = ref('')
+const paymentsSelected = ref(0)
+const selectedDestinyAccount = ref('')
+const amount = ref(0)
+const loans = ref([])
+const accounts = ref([])
+
+
+const loanPaymentsFilter = computed(() => {
+    const selectedLoan = loans.value.find(loan => loan.name === loanSelected.value);
+    return selectedLoan ? selectedLoan.payments : [];
+});
+
+const handleRequestLoan = ()=>{
+                        const ss = {
+                    originAccount:selectedDestinyAccount.value,
+                    name:loanSelected.value,
+                    amount:amount.value,
+                    payments:paymentsSelected.value
+                }
+    console.log(ss)
+    Swal.fire(
+        {
+            title:'Solicitar prestamo',
+            text:'Desea solicitar el siguiente prestamo?',
+            icon:'question',
+            showDenyButton:true,
+            showConfirmButton:true
+        }
+    )
+    .then(result=>{
+        if(result.isDenied){
+            Swal.fire('Cancelado','La operacion ha sido cancelada','info')
+        }else{
+            if(result.isConfirmed){
+                    const data = {
+                    originAccount:selectedDestinyAccount.value,
+                    name:loanSelected.value,
+                    amount:amount.value,
+                    payments:paymentsSelected.value
+                }
+                LoanService.requestLoan(data)
+                Swal.fire('Prestamo solicitado correctamente','','success')
+                setTimeout(()=>{
+                    window.location.reload()
+                },1500)
+            }
+        }
+    })
+
+}
+
+onMounted(()=>{
+    //FETCH LOANS//////////////////////////////
+            fetch(`http://localhost:8080/api/loans`,{method:'GET',credentials:'include'})
+            .then(res=>{
+                if(!res.ok){
+                    throw new Error('Error fetching loans')
+                }else{
+                    return res.json()
+                }
+            })
+            .then(data=> {
+                console.log(data)
+                loans.value  = data
+            })
+            .catch(err=>console.log(err))
+//FETCH ACCOUNTS//////////////////////////////
+            fetch('http://localhost:8080/api/clients/auth',{method:'GET',credentials:'include'})
+        .then(res=>{
+            if(!res.ok){
+                throw new Error('Error fetching data')
+            }
+            else{
+                return res.json()
+            }
+        })
+        .then(data=>{console.log(data)
+        accounts.value = data.accounts.filter(a=>a.deleted == false).map(a=>a.number)
+        })
+        .catch(err=>console.log(err))
+        }
+        )
 </script>
 
 <style scoped>

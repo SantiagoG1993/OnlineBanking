@@ -64,7 +64,8 @@ onClickOutside(main_cont_ref,()=>{
 const deleteAccount = (id)=>{
 Swal.fire(
     {
-        title:'Delete account?',
+        title:'Eliminar cuenta',
+        text:"Esta seguro que desea eliminar esta cuenta?",
         icon:'question',
         showDenyButton:true,
         showConfirmButton:true
@@ -72,7 +73,7 @@ Swal.fire(
 )
 .then(result=>{
     if(result.isDenied){
-        Swal.fire('Cancelled','','info')
+        Swal.fire('Cancelado','La operacion fue cancelada','info')
     }else{
         if(result.isConfirmed){
             AccountService.deleteAccount(id)

@@ -10,7 +10,7 @@
             :transactionsArray="account.transactions"
             />
         
-            <button id="add_btn" @click="createAccount">Add new account</button>
+        <button id="add_btn" @click="createAccount">Agregar nueva cuenta</button>
         </div>
         <h2>Prestamos</h2>
         <div class="loans_container">
@@ -44,21 +44,22 @@ const props = defineProps(
 const createAccount= ()=>{
     Swal.fire(
         {
-            title:'Create new account?',
+            title:'Nueva cuenta?',
+            text:'Esta seguro que desea crear una nueva cuenta?',
             icon:'question',
             showDenyButton:true
         }
     )
     .then(result=>{
         if(result.isDenied){
-            Swal.fire('Cancelled','','info')
+            Swal.fire('Cancelado','','info')
         }else{
             if(result.isConfirmed){
                 AccountService.createAccount()
-                Swal.fire('Account succesfully created','','success')
+                Swal.fire('Cuenta creada con exito','','success')
                 setTimeout(()=>{
                 window.location.reload()
-                },1500)
+                },2000)
             }
         }
     })
@@ -129,7 +130,7 @@ width: 80%;
 align-self: flex-end;
 } 
 .accounts_container{
-    min-height: 180px;
+    min-height: 350px;
     max-height: 450px;
 }
 .loans_container{

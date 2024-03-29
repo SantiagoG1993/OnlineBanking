@@ -1,15 +1,15 @@
 <template>
     <div class="add_card_main_container" v-if="props.isVisible == true" ref="container">
         <h1>Add new card</h1>
-        <form action="">
-            <select name="" id="">
-            <option value="">PLATINUM</option>
-            <option value="">TITANIUM</option>
-            <option value="">GOLD</option>
+        <form action="" @submit.prevent="handleClick">
+            <select name="" id="" v-model="cardColorSelected">
+            <option value="PLATINUM">PLATINUM</option>
+            <option value="TITANIUM">TITANIUM</option>
+            <option value="GOLD">GOLD</option>
         </select>
-        <select name="" id="">
-            <option value="">DEBIT</option>
-            <option value="">CREDIT</option>
+        <select name="" id="" v-model="cardTypeSelected">
+            <option value="DEBITO">DEBITO</option>
+            <option value="CREDITO">CREDITO</option>
         </select>
             <button>Confirm</button>
         </form>
@@ -19,7 +19,12 @@
 <script setup>
 import { ref,defineProps,defineEmits} from 'vue';
 import { onClickOutside } from '@vueuse/core';
+import CardService from '../services/CardService'
+import Swal from 'sweetalert2'
 import 'animate.css';
+
+const cardTypeSelected = ref('')
+const cardColorSelected = ref('')
 
 const container = ref(null)
 const emit = defineEmits(
@@ -29,7 +34,30 @@ const emit = defineEmits(
 onClickOutside(container,()=>{
     emit('close-add-form')
 })
+const handleClick = ()=>{
+    Swal.fire(
+        {
+            title:'Create new card?',
+            icon:'question',
+            showConfirmButton:true,
+            showDenyButton:true
+        }
+    )
+    .then(result=>{
+        if(result.isDenied){
+            Swal.fire('Cancelled','','info')
+        }else{
+            if(result.isConfirmed){
+                CardService.createCard(cardColorSelected.value,cardTypeSelected.value)
+                Swal.fire('Card succesfully created','','success')
+                setTimeout(()=>{
+                    window.location.reload()
+                },1000)
+            }
+        }
+    })
 
+}
 const props = defineProps(
     {
         isVisible:Boolean

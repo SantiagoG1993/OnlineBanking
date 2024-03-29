@@ -2,10 +2,10 @@
     <div class="main_container_navbar" v-if="props.isVisible == true" ref="main_container_ref">
         <img src="../assets/logo.png" alt="logo-nav" id="logo">
         <div class="options_container">
-            <p @click="toggleSection('accounts')"><i class="fa-solid fa-wallet"></i>Cuentas</p>
+            <p @click="toggleSection('accounts')" id="account"><i class="fa-solid fa-wallet"></i>Cuentas</p>
             <p @click="toggleSection('cards')"><i class="fa-regular fa-credit-card"></i>Tarjetas</p>
-            <p @click="toggleSection('transactions')"><i class="fa-solid fa-arrows-left-right-to-line"></i>Transacciones</p>
-            <p @click="toggleSection('loans')"><i class="fa-solid fa-hand-holding-dollar"></i>Prestamos</p>
+            <p @click="toggleSection('transactions')" id="transaction"><i class="fa-solid fa-arrows-left-right-to-line"></i>Transacciones</p>
+            <p @click="toggleSection('loans')" id="prestamos"><i class="fa-solid fa-hand-holding-dollar"></i>Prestamos</p>
         </div>
         <button @click="logOut" >Salir<i class="fa-solid fa-door-open"></i></button>
     </div>    
@@ -16,6 +16,8 @@ import { defineProps, ref,defineEmits } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 import AuthService from '../services/AuthServices'
 import 'animate.css';
+import Swal from 'sweetalert2'
+import router from '../router/index'
 
 const main_container_ref = ref(null)
 
@@ -35,7 +37,25 @@ onClickOutside(main_container_ref,()=>{
 })
 
 const logOut = ()=>{
-    AuthService.logout()
+    Swal.fire(
+        {
+            title:'Salir?',
+            text:'Esta seguro que desea salir?',
+            icon:'question',
+            showDenyButton:true,
+            showConfirmButton:true
+        }
+    )
+    .then(result=>{
+        if(result.isDenied){
+            throw new Error('Error logging out')
+        }else{
+            if(result.isConfirmed){
+                AuthService.logout()
+                router.push('/')
+            }
+        }
+    })
 }
 </script>
 
@@ -72,6 +92,7 @@ animation: slideInLeft 0.1s;
     }
 p{
     margin-left: 5%;
+    display: flex;
 }
 button{
     width: 70%;
@@ -125,6 +146,15 @@ i{
     button{
         margin-top: 90px;
         height: 45px;
+    }
+    #transaction{
+                padding-left: 45px;
+    }
+    #prestamos{
+        padding-left: 15px;
+    }
+    #account{
+        padding-left: 5px;
     }
 }
 </style>

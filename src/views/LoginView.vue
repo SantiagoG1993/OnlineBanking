@@ -118,5 +118,8 @@ button:hover{
     form{
         width: 400px;
     }
+    .p_text{
+        margin-top: 10px;
+    }
 }
 </style>
